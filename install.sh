@@ -2,6 +2,8 @@
 
 echo "Installing Hyprland dotfiles..."
 
+sudo pacman -S --needed jq
+
 if [ -d "$HOME/.config/hypr" ]; then
     mv "$HOME/.config/hypr" "$HOME/.config/hypr.bak"
 fi
@@ -27,6 +29,9 @@ cp -r .config/wofi "$HOME/.config/"
 cp -r .config/kitty "$HOME/.config/"
 cp -r .config/dunst "$HOME/.config/"
 cp -r .config/rofi "$HOME/.config/"
+
+mkdir -p "$HOME/.local/bin"
+cp .config/hypr/scripts/waybar-autohide.sh "$HOME/.local/bin/" 2>/dev/null
 
 echo "Dotfiles installed successfully!"
 echo "Restart Hyprland with SUPER+M"
