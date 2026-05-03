@@ -2,7 +2,24 @@
 
 echo "Installing Hyprland dotfiles..."
 
-sudo pacman -S --needed jq
+sudo pacman -S --needed \
+    hyprland \
+    waybar \
+    wofi \
+    kitty \
+    dunst \
+    rofi \
+    jq \
+    starship \
+    gtk3 \
+    gtk4 \
+    papirus-icon-theme \
+    breeze-snow-cursor-theme \
+    ttf-jetbrains-mono-nerd \
+    nautilus \
+    python \
+    glib2 \
+    xsettingsd
 
 if [ -d "$HOME/.config/hypr" ]; then
     mv "$HOME/.config/hypr" "$HOME/.config/hypr.bak"
@@ -22,6 +39,15 @@ fi
 if [ -d "$HOME/.config/rofi" ]; then
     mv "$HOME/.config/rofi" "$HOME/.config/rofi.bak"
 fi
+if [ -d "$HOME/.config/gtk-3.0" ]; then
+    mv "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-3.0.bak"
+fi
+if [ -d "$HOME/.config/gtk-4.0" ]; then
+    mv "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-4.0.bak"
+fi
+if [ -d "$HOME/.config/nvim" ]; then
+    mv "$HOME/.config/nvim" "$HOME/.config/nvim.bak"
+fi
 if [ -f "$HOME/.bashrc" ]; then
     mv "$HOME/.bashrc" "$HOME/.bashrc.bak"
 fi
@@ -35,11 +61,19 @@ cp -r .config/rofi "$HOME/.config/"
 cp -r .config/gtk-3.0 "$HOME/.config/"
 cp -r .config/gtk-4.0 "$HOME/.config/"
 cp -r .config/nvim "$HOME/.config/"
+cp -r .config/xsettingsd "$HOME/.config/"
 cp -r .icons "$HOME/"
 cp .bashrc "$HOME/"
 
 mkdir -p "$HOME/.local/bin"
-cp .config/hypr/scripts/waybar-autohide.sh "$HOME/.local/bin/" 2>/dev/null
+
+sudo cp .local/share/glib-2.0/schemas/10_theme.gschema.override /usr/share/glib-2.0/schemas/
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
+
+eval "$(starship init bash)" 2>/dev/null || true
 
 echo "Dotfiles installed successfully!"
 echo "Restart Hyprland with SUPER+M"
