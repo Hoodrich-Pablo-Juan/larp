@@ -6,7 +6,8 @@ window {
 #input {
     margin: 5px;
     background-color: #151515;
-    color: #ffffff;
+    color: #bbbbbb;
+    border: 1px solid #2a2a2a;
 }
 
 #inner-box {
