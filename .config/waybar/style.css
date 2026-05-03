@@ -8,26 +8,27 @@
 
 window#waybar {
     background: rgba(10, 10, 15, 0.95);
-    color: #aaaaaa;
+    color: #888888;
 }
 
 #workspaces button {
     padding: 0 8px;
     background: transparent;
-    color: #555555;
+    color: #444444;
 }
 
 #workspaces button.active {
-    color: #ff8800;
+    color: #ffffff;
+    border-bottom: 1px solid #ff8800;
 }
 
 #workspaces button:hover {
-    color: #ff8800;
+    color: #ffffff;
     background: transparent;
 }
 
 #clock {
-    color: #888888;
+    color: #999999;
 }
 
 #pulseaudio {
@@ -60,5 +61,5 @@ window#waybar {
 
 tooltip {
     background: rgba(10, 10, 15, 0.95);
-    border: 1px solid #ff8800;
+    border: 1px solid #333333;
 }

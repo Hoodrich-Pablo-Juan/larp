@@ -11,9 +11,9 @@ configuration {
 
 * {
     background-color: rgba(10, 10, 15, 0.98);
-    foreground-color: #aaaaaa;
-    border-color: #ff8800;
-    selected-normal-background: #ff8800;
-    selected-normal-foreground: #0a0a0f;
-    active-normal-foreground: #ff8800;
+    foreground-color: #999999;
+    selected-normal-background: #1a1a1a;
+    selected-normal-foreground: #ffffff;
+    active-normal-foreground: #ffffff;
+    border-color: #2a2a2a;
 }

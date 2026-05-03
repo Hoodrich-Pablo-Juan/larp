@@ -1,21 +1,21 @@
 format = "$all"
 
 [character]
-success_symbol = "[➜](bold #ff8800)"
+success_symbol = "[➜](bold #ffffff)"
 error_symbol = "[➜](bold #ff8800)"
 
 [directory]
-style = "#aaaaaa"
+style = "#999999"
 
 [git_branch]
-style = "#ff8800"
+style = "#ffffff"
 
 [git_status]
-style = "#888888"
+style = "#777777"
 
 [username]
 style_user = "#bbbbbb"
 style_root = "#ff8800"
 
 [hostname]
-style = "#777777"
+style = "#666666"
