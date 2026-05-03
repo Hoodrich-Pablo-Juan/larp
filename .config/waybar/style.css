@@ -19,6 +19,7 @@ window#waybar {
 
 #workspaces button.active {
     color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
     border-bottom: 1px solid #ff8800;
 }
 
@@ -28,31 +29,31 @@ window#waybar {
 }
 
 #clock {
-    color: #999999;
+    color: #aaaaaa;
 }
 
 #pulseaudio {
-    color: #777777;
+    color: #888888;
 }
 
 #network {
-    color: #777777;
+    color: #888888;
 }
 
 #cpu {
-    color: #666666;
+    color: #777777;
 }
 
 #memory {
-    color: #666666;
+    color: #777777;
 }
 
 #battery {
-    color: #777777;
+    color: #888888;
 }
 
 #tray {
-    color: #777777;
+    color: #888888;
 }
 
 #clock, #pulseaudio, #network, #cpu, #memory, #battery, #tray {

@@ -5,17 +5,17 @@ success_symbol = "[➜](bold #ffffff)"
 error_symbol = "[➜](bold #ff8800)"
 
 [directory]
-style = "#999999"
+style = "#aaaaaa"
 
 [git_branch]
 style = "#ffffff"
 
 [git_status]
-style = "#777777"
+style = "#888888"
 
 [username]
-style_user = "#bbbbbb"
+style_user = "#eeeeee"
 style_root = "#ff8800"
 
 [hostname]
-style = "#666666"
+style = "#777777"
