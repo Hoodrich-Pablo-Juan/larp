@@ -10,10 +10,10 @@ configuration {
 }
 
 * {
-    background-color: #1a1b26;
-    foreground-color: #c0caf5;
-    border-color: #33ccff;
-    selected-normal-background: #33ccff;
-    selected-normal-foreground: #1a1b26;
-    active-normal-foreground: #33ccff;
+    background-color: rgba(10, 10, 15, 0.98);
+    foreground-color: #aaaaaa;
+    border-color: #ff8800;
+    selected-normal-background: #ff8800;
+    selected-normal-foreground: #0a0a0f;
+    active-normal-foreground: #ff8800;
 }
