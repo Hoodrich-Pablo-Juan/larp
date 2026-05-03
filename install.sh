@@ -77,3 +77,6 @@ eval "$(starship init bash)" 2>/dev/null || true
 
 echo "Dotfiles installed successfully!"
 echo "Restart Hyprland with SUPER+M"
+
+echo "Setting up gwfox Firefox theme..."
+./scripts/setup-gwfox.sh
