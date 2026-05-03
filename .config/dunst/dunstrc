@@ -38,5 +38,5 @@
 
 [urgency_critical]
     background = "#0a0a0f"
-    foreground = "#ff8800"
+    foreground = "#cccccc"
     timeout = 0

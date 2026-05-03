@@ -6,7 +6,7 @@ window {
 #input {
     margin: 5px;
     background-color: #151515;
-    color: #ffffff;
+    color: #cccccc;
     border: 1px solid #2a2a2a;
 }
 
@@ -29,10 +29,9 @@ window {
 
 #entry:selected {
     background-color: #1a1a1a;
-    border-left: 2px solid #ff8800;
+    border-left: 2px solid #555555;
 }
 
 #entry:selected #text {
-    color: #ffffff;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    color: #cccccc;
 }
