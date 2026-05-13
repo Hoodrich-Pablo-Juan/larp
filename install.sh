@@ -4,6 +4,7 @@ echo "Installing Hyprland dotfiles..."
 
 sudo pacman -S --needed \
     hyprland \
+    hyprpaper \
     waybar \
     wofi \
     kitty \
@@ -19,7 +20,10 @@ sudo pacman -S --needed \
     nautilus \
     python \
     glib2 \
-    xsettingsd
+    xsettingsd \
+    brightnessctl \
+    libpulse \
+    polkit-gnome
 
 if [ -d "$HOME/.config/hypr" ]; then
     mv "$HOME/.config/hypr" "$HOME/.config/hypr.bak"
