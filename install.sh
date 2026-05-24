@@ -172,6 +172,40 @@ user_pref("privacy.cpd.cookies", false);
 user_pref("privacy.cpd.siteSettings", false);
 USERJS
         fi
+        
+        # Add font fix to userContent.css to prevent monospace font issue
+        if [ -f "${profile}/chrome/userContent.css" ]; then
+            # Check if font fix already exists
+            if ! grep -q "Fix monospace font issue" "${profile}/chrome/userContent.css"; then
+                sed -i '1,/^:root {/ a\
+/* Fix monospace font issue - use system default fonts */\
+* {\
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;\
+}\
+\
+body, input, button, select, textarea {\
+  font-family: inherit !important;\
+}\
+' "${profile}/chrome/userContent.css"
+            fi
+        fi
+        
+        # Add font fix to userChrome.css to prevent monospace font issue
+        if [ -f "${profile}/chrome/userChrome.css" ]; then
+            # Check if font fix already exists
+            if ! grep -q "Fix monospace font issue" "${profile}/chrome/userChrome.css"; then
+                sed -i '1,/^@namespace xul/ a\
+/* Fix monospace font issue - use system default fonts */\
+* {\
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;\
+}\
+\
+body, input, button, select, textarea, .textbox-input {\
+  font-family: inherit !important;\
+}\
+' "${profile}/chrome/userChrome.css"
+            fi
+        fi
         echo "Applied gwfox theme to $profile"
     done
 fi
