@@ -178,13 +178,23 @@ USERJS
             # Check if font fix already exists
             if ! grep -q "Fix monospace font issue" "${profile}/chrome/userContent.css"; then
                 sed -i '1,/^:root {/ a\
-/* Fix monospace font issue - use system default fonts */\
-* {\
+/* Fix monospace font issue - use system default fonts (preserves icons) */\
+body, \
+input:not([type="checkbox"]):not([type="radio"]),\
+button:not(.toolbarbutton-1),\
+select,\
+textarea,\
+label:not(.checkbox-label):not(.radio-label),\
+p:not(.checkbox-label):not(.radio-label),\
+span:not(.checkbox-label):not(.radio-label):not(.icon),\
+div:not(.checkbox-container):not(.radio-container),\
+li,\
+ul,\
+ol,\
+h1, h2, h3, h4, h5, h6,\
+.aHTMLTooltip,\
+.tooltip {\
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;\
-}\
-\
-body, input, button, select, textarea {\
-  font-family: inherit !important;\
 }\
 ' "${profile}/chrome/userContent.css"
             fi
@@ -195,13 +205,30 @@ body, input, button, select, textarea {\
             # Check if font fix already exists
             if ! grep -q "Fix monospace font issue" "${profile}/chrome/userChrome.css"; then
                 sed -i '1,/^@namespace xul/ a\
-/* Fix monospace font issue - use system default fonts */\
-* {\
+/* Fix monospace font issue - use system default fonts (preserves icons) */\
+body, \
+input:not(.textbox-input):not([type="checkbox"]):not([type="radio"]),\
+button:not(.toolbarbutton-1),\
+select,\
+textarea,\
+.textbox-input,\
+label:not(.checkbox-label):not(.radio-label),\
+p:not(.checkbox-label):not(.radio-label),\
+span:not(.checkbox-label):not(.radio-label):not(.icon),\
+div:not(.checkbox-container):not(.radio-container),\
+li,\
+ul,\
+ol,\
+h1, h2, h3, h4, h5, h6,\
+.aHTMLTooltip,\
+.tooltip,\
+.menupopup-text,\
+.menulist-text,\
+.menulist-label,\
+.menuitem-text,\
+.menuitem-label,\
+.description {\
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;\
-}\
-\
-body, input, button, select, textarea, .textbox-input {\
-  font-family: inherit !important;\
 }\
 ' "${profile}/chrome/userChrome.css"
             fi
