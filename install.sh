@@ -123,7 +123,13 @@ cat <<EOF | sudo tee /usr/lib/librewolf/distribution/policies.json
       "browser.tabs.drawInTitlebar": true,
       "browser.uidensity": 0,
       "layers.acceleration.force-enabled": true,
-      "mozilla.widget.use-libdecor-geometry-extension": true
+      "mozilla.widget.use-libdecor-geometry-extension": true,
+      "network.cookie.lifetimePolicy": 0,
+      "privacy.clearOnShutdown.cookies": false,
+      "privacy.clearOnShutdown.siteSettings": false,
+      "privacy.sanitize.sanitizeOnShutdown": false,
+      "privacy.cpd.cookies": false,
+      "privacy.cpd.siteSettings": false
     }
   }
 }
@@ -153,6 +159,19 @@ if [ -d "$HOME/.librewolf" ]; then
         cp /tmp/gwfox/userContent.css "${profile}/chrome/" 2>/dev/null || true
         # Also copy user.js if it exists in the repo
         cp /tmp/gwfox/user.js "${profile}/user.js" 2>/dev/null || true
+        
+        # Create user.js with cookie preservation settings if it doesn't exist
+        if [ ! -f "${profile}/user.js" ]; then
+            cat <<'USERJS' > "${profile}/user.js"
+// LibreWolf user.js - Preserve cookies on exit
+user_pref("network.cookie.lifetimePolicy", 0);
+user_pref("privacy.clearOnShutdown.cookies", false);
+user_pref("privacy.clearOnShutdown.siteSettings", false);
+user_pref("privacy.sanitize.sanitizeOnShutdown", false);
+user_pref("privacy.cpd.cookies", false);
+user_pref("privacy.cpd.siteSettings", false);
+USERJS
+        fi
         echo "Applied gwfox theme to $profile"
     done
 fi
