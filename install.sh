@@ -1,10 +1,67 @@
 #!/bin/bash
 
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit
+
 echo "Installing Hyprland dotfiles..."
 
+# Fix pacman.conf if it was broken by previous runs
+sudo sed -i '/\[chaotic-aur\]/,/Include/d' /etc/pacman.conf
+
+# Enable multilib
+sudo sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf
+
+# Add Chaotic-AUR (Most Robust method)
+if ! grep -q "chaotic-aur" /etc/pacman.conf; then
+    echo "Adding Chaotic-AUR repository..."
+    sudo pacman-key --init
+    sudo pacman-key --populate archlinux
+
+    KID="3056513887B78AEB"
+    KSUCCESS=false
+    
+    # Try direct download first from official source
+    echo "Attempting direct key download..."
+    if curl -sL https://aur.chaotic.cx/chaotic.gpg -o chaotic.gpg && [ -s chaotic.gpg ]; then
+        # Check if it's actually a GPG key or an HTML error page
+        if file chaotic.gpg | grep -q "public key"; then
+            if sudo pacman-key --add chaotic.gpg && sudo pacman-key --lsign-key "$KID"; then
+                KSUCCESS=true
+            fi
+        fi
+        rm -f chaotic.gpg
+    fi
+
+    # Fallback to keyservers if direct download fails
+    if [ "$KSUCCESS" = false ]; then
+        echo "Direct download failed or invalid. Trying keyservers..."
+        for server in hkp://keyserver.ubuntu.com:80 hkps://keyserver.ubuntu.com hkp://pgp.mit.edu; do
+            echo "Trying $server..."
+            if sudo pacman-key --recv-key "$KID" --keyserver "$server" && sudo pacman-key --lsign-key "$KID"; then
+                KSUCCESS=true
+                break
+            fi
+        done
+    fi
+
+    if [ "$KSUCCESS" = true ]; then
+        sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+        echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+        sudo pacman-key --populate chaotic
+    else
+        echo "CRITICAL ERROR: Could not fetch Chaotic-AUR keys ($KID). Installation aborted."
+        exit 1
+    fi
+fi
+
+# Update system
+sudo pacman -Sy
+
+# Install dependencies (swaybg for wallpaper, removal of unused bar)
 sudo pacman -S --needed \
     hyprland \
-    hyprpaper \
+    hypridle \
     waybar \
     wofi \
     kitty \
@@ -15,7 +72,6 @@ sudo pacman -S --needed \
     gtk3 \
     gtk4 \
     papirus-icon-theme \
-    breeze-snow-cursor-theme \
     ttf-jetbrains-mono-nerd \
     nautilus \
     python \
@@ -23,39 +79,108 @@ sudo pacman -S --needed \
     xsettingsd \
     brightnessctl \
     libpulse \
-    polkit-gnome
+    polkit-gnome \
+    wget \
+    curl \
+    bluez \
+    bluez-utils \
+    blueman \
+    unzip \
+    binutils \
+    swaybg \
+    librewolf
 
-if [ -d "$HOME/.config/hypr" ]; then
-    mv "$HOME/.config/hypr" "$HOME/.config/hypr.bak"
-fi
-if [ -d "$HOME/.config/waybar" ]; then
-    mv "$HOME/.config/waybar" "$HOME/.config/waybar.bak"
-fi
-if [ -d "$HOME/.config/wofi" ]; then
-    mv "$HOME/.config/wofi" "$HOME/.config/wofi.bak"
-fi
-if [ -d "$HOME/.config/kitty" ]; then
-    mv "$HOME/.config/kitty" "$HOME/.config/kitty.bak"
-fi
-if [ -d "$HOME/.config/dunst" ]; then
-    mv "$HOME/.config/dunst" "$HOME/.config/dunst.bak"
-fi
-if [ -d "$HOME/.config/rofi" ]; then
-    mv "$HOME/.config/rofi" "$HOME/.config/rofi.bak"
-fi
-if [ -d "$HOME/.config/gtk-3.0" ]; then
-    mv "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-3.0.bak"
-fi
-if [ -d "$HOME/.config/gtk-4.0" ]; then
-    mv "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-4.0.bak"
-fi
-if [ -d "$HOME/.config/nvim" ]; then
-    mv "$HOME/.config/nvim" "$HOME/.config/nvim.bak"
-fi
-if [ -f "$HOME/.bashrc" ]; then
-    mv "$HOME/.bashrc" "$HOME/.bashrc.bak"
+# Enable Bluetooth
+sudo systemctl enable --now bluetooth
+
+# Install cursor theme
+if command -v yay &> /dev/null; then
+    yay -S --needed --noconfirm breeze-snow-cursor-theme
 fi
 
+# LibreWolf Policies (Extensions & Theme Prep)
+sudo mkdir -p /usr/lib/librewolf/distribution
+cat <<EOF | sudo tee /usr/lib/librewolf/distribution/policies.json
+{
+  "policies": {
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+      },
+      "{d774031d-27dd-4b7b-9447-0d60317e07a3}": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi"
+      },
+      "addon@darkreader.org": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi"
+      }
+    },
+    "Preferences": {
+      "toolkit.legacyUserProfileCustomizations.stylesheets": true,
+      "svg.context-properties.content.enabled": true,
+      "browser.tabs.drawInTitlebar": true,
+      "browser.uidensity": 0,
+      "layers.acceleration.force-enabled": true,
+      "mozilla.widget.use-libdecor-geometry-extension": true
+    }
+  }
+}
+EOF
+
+# Install gwfox theme
+echo "Downloading gwfox theme..."
+rm -rf /tmp/gwfox
+git clone --depth 1 https://github.com/akkva/gwfox.git /tmp/gwfox
+
+# Install waybar-autohide
+echo "Installing waybar-autohide..."
+rm -rf /tmp/waybar-autohide
+git clone https://github.com/HideyoshiNakazone/waybar-autohide.git /tmp/waybar-autohide
+cd /tmp/waybar-autohide && make install
+cd - || exit
+
+# Apply theme to ALL profiles found in .librewolf
+if [ -d "$HOME/.librewolf" ]; then
+    echo "Searching for LibreWolf profiles..."
+    # Find directories inside .librewolf that are likely profiles (contain a dot and are not 'Profile Groups')
+    find "$HOME/.librewolf" -mindepth 1 -maxdepth 1 -type d -name "*.*" ! -name "Profile Groups" | while read -r profile; do
+        echo "Found profile: $profile"
+        mkdir -p "${profile}/chrome"
+        # The gwfox repo has .css files in the root
+        cp /tmp/gwfox/userChrome.css "${profile}/chrome/" 2>/dev/null || true
+        cp /tmp/gwfox/userContent.css "${profile}/chrome/" 2>/dev/null || true
+        # Also copy user.js if it exists in the repo
+        cp /tmp/gwfox/user.js "${profile}/user.js" 2>/dev/null || true
+        echo "Applied gwfox theme to $profile"
+    done
+fi
+
+# Store a copy for new profiles
+mkdir -p "$HOME/.local/share/gwfox"
+cp -r /tmp/gwfox/* "$HOME/.local/share/gwfox/"
+
+# Create theme applier script
+cat <<'EOF' > "$HOME/.local/bin/apply-gwfox"
+#!/bin/bash
+if [ -d "$HOME/.librewolf" ]; then
+    echo "Applying gwfox theme to LibreWolf profiles..."
+    find "$HOME/.librewolf" -mindepth 1 -maxdepth 1 -type d -name "*.*" ! -name "Profile Groups" | while read -r profile; do
+        mkdir -p "${profile}/chrome"
+        cp "$HOME/.local/share/gwfox/userChrome.css" "${profile}/chrome/" 2>/dev/null || true
+        cp "$HOME/.local/share/gwfox/userContent.css" "${profile}/chrome/" 2>/dev/null || true
+        cp "$HOME/.local/share/gwfox/user.js" "${profile}/user.js" 2>/dev/null || true
+        echo "Applied to: $profile"
+    done
+    echo "Done. Restart LibreWolf."
+else
+    echo "LibreWolf directory not found."
+fi
+EOF
+chmod +x "$HOME/.local/bin/apply-gwfox"
+
+# Copy configs
 cp -r .config/hypr "$HOME/.config/"
 cp -r .config/waybar "$HOME/.config/"
 cp -r .config/wofi "$HOME/.config/"
@@ -64,23 +189,39 @@ cp -r .config/dunst "$HOME/.config/"
 cp -r .config/rofi "$HOME/.config/"
 cp -r .config/gtk-3.0 "$HOME/.config/"
 cp -r .config/gtk-4.0 "$HOME/.config/"
-cp -r .config/nvim "$HOME/.config/"
 cp -r .config/xsettingsd "$HOME/.config/"
 cp -r .icons "$HOME/"
+if [ -d "wallpapers" ]; then
+    cp -r wallpapers "$HOME/"
+else
+    echo "Warning: wallpapers directory not found in current folder."
+fi
 cp .bashrc "$HOME/"
 
+# Remove hyprpaper config if it exists (using swaybg now)
+rm -f "$HOME/.config/hypr/hyprpaper.conf"
+
+# Setup local bin
 mkdir -p "$HOME/.local/bin"
 
-sudo cp .local/share/glib-2.0/schemas/10_theme.gschema.override /usr/share/glib-2.0/schemas/
-sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+# Path Fixes
+find "$HOME/.config/hypr" -type f -exec sed -i "s|/home/larp|$HOME|g" {} +
 
+# Setup swaybg for wallpaper
+# (Config update in hyprland.conf needed)
+
+# GTK theme
 gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
 
-eval "$(starship init bash)" 2>/dev/null || true
+# Init Starship
+if [ -f "$HOME/.bashrc" ] && ! grep -q "starship init bash" "$HOME/.bashrc"; then
+    echo 'eval "$(starship init bash)"' >> "$HOME/.bashrc"
+fi
 
-echo "Dotfiles installed successfully!"
-echo "Restart Hyprland with SUPER+M"
+# Ensure ~/.local/bin is in PATH
+if [ -f "$HOME/.bashrc" ] && ! grep -q ".local/bin" "$HOME/.bashrc"; then
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+fi
 
-echo "Setting up gwfox Firefox theme..."
-./scripts/setup-gwfox.sh
+echo "Installation complete. Restart Hyprland!"

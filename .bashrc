@@ -7,3 +7,5 @@ alias grep='grep --color=auto'
 alias diff='diff --color=auto'
 
 PS1='\[\e[38;5;252m\]\u\[\e[0m\]@\[\e[38;5;248m\]\h\[\e[0m\]:\[\e[38;5;251m\]\w\[\e[0m\] \[\e[38;5;245m\]>\[\e[0m\] '
+
+eval "$(starship init bash)"
