@@ -9,6 +9,11 @@
 window#waybar {
     background: rgba(20, 20, 20, 0.95);
     color: #888888;
+    transition: margin-top 0.2s ease-out;
+}
+
+window#waybar.hidden {
+    margin-top: -30px;
 }
 
 #workspaces button {
