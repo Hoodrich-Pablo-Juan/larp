@@ -3,10 +3,11 @@
     "position": "top",
     "height": 24,
     "spacing": 5,
+    "toggle": true,
 
     "modules-left": ["hyprland/workspaces", "custom/platform-profile", "temperature"],
     "modules-center": ["clock"],
-    "modules-right": ["wireplumber", "battery", "hyprland/language", "idle_inhibitor", "network", "tray"],
+    "modules-right": ["battery", "wireplumber", "hyprland/language", "idle_inhibitor", "network", "tray"],
 
     "hyprland/workspaces": {
         "format": "<span size='larger'>{icon}</span>",
@@ -37,10 +38,11 @@
     },
 
     "battery": {
-        "bat": "BAT1",
+        "bat": "BAT0",
         "interval": 60,
-        "format": "{icon}  {capacity}%",
-        "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
+        "format": "  {capacity}%",
+        "format-charging": "  {capacity}%",
+        "format-plugged": "  {capacity}%"
     },
 
     "memory": {
