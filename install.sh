@@ -142,10 +142,8 @@ git clone --depth 1 https://github.com/akkva/gwfox.git /tmp/gwfox
 
 # Install waybar-autohide
 echo "Installing waybar-autohide..."
-rm -rf /tmp/waybar-autohide
-git clone https://github.com/HideyoshiNakazone/waybar-autohide.git /tmp/waybar-autohide
-cd /tmp/waybar-autohide && make install
-cd - || exit
+cp .config/waybar/waybar-simple-autohide.sh ~/.config/waybar/
+chmod +x ~/.config/waybar/waybar-simple-autohide.sh
 
 # Apply theme to ALL profiles found in .librewolf
 if [ -d "$HOME/.librewolf" ]; then
