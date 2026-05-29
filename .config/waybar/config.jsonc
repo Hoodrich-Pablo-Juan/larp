@@ -2,6 +2,7 @@
     "layer": "top",
     "position": "top",
     "height": 30,
+    "mode": "hide",
     "exclusive": true,
     "passthrough": false,
     "spacing": 4,
