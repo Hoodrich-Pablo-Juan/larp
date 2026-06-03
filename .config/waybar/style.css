@@ -12,6 +12,8 @@
 #waybar {
     color: @foreground;
     background-color: @background;
+    border: none;
+    box-shadow: none;
 }
 
 #workspaces button {
